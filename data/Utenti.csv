@@ -1,9 +1,8 @@
 nome;cognome;username;password;dataNascita;domicilio;ruolo
-Mario;Rossi;MarioRo;marioro1988;1988-08-06;Mozzate;PROIEZIONISTA
-Giuseppe;Bagnasco;Bagnato;bagnaca06;2006-06-23;Busto Arsizio;PROIEZIONISTA
-Luca;Moretti;LucaMor;proiez03;1985-03-22;Varese;PROIEZIONISTA
-Ferdinando;Torretta;ToFerdi;giugiu4673;2001-04-10;Locate Varesino;BIGLIETTAIO
-Giulia;Marchetti;GiuMarc;cinema2024x;1988-06-03;Varese;BIGLIETTAIO
-Roberto;Esposito;RoboEsp;popcorn8821;1992-11-11;Como;BIGLIETTAIO
-Chiara;Bellandi;ChiBell;sala7Chiara;1995-07-27;Milano;BIGLIETTAIO
-Marco;Ferretti;MaxFerr;ticket5590;1999-06-01;Varese;BIGLIETTAIO
+Mario;Rossi;MarioRo;PBKDF2$120000$D4/y8GaXgdmSnHGdR4Va6w==$QP0CAsLTzHXqlBsov+j04UK/8fVr/PdBXQYG8OD58rM=;1988-08-06;Mozzate;PROIEZIONISTA
+Giuseppe;Bagnasco;Bagnato;PBKDF2$120000$CimS2jPCJzeyO1ZsdDUNww==$RQTtKHcrXYxLcAAeRxaKsBG+/vAosY2F+o0NxXeEXws=;2006-06-23;Busto Arsizio;PROIEZIONISTA
+Ferdinando;Torretta;ToFerdi;PBKDF2$120000$0uixIMpVIdjR8poP/W5MFA==$tAOA0XRzyynRldlmhGAagL1ETXQQ+WKHdoQVVG8SIzs=;2001-04-10;Locate Varesino;BIGLIETTAIO
+Giulia;Marchetti;GiuMarc;PBKDF2$120000$NDC+X2rs3y+dA8/mGoQHoQ==$y1d37GQsrRWh+R1SUw7BfdSBUhTCoBa6eLggqGZewGc=;1988-06-03;Varese;BIGLIETTAIO
+Roberto;Esposito;RoboEsp;PBKDF2$120000$54ui6w0VH9kBOlagDZhMOw==$Rg+Hh8Xnc1CzquR8LNJQMur4sv6NT7089MCBCM2y/9o=;1992-11-11;Como;BIGLIETTAIO
+Chiara;Bellandi;ChiBell;PBKDF2$120000$ggNBGg6ee21pJKvNLVguMQ==$GcEujDu0OJy7RJItUwQ0EN9Wx07KTMjc3Q+wujUr2QY=;1995-07-27;Milano;BIGLIETTAIO
+Marco;Ferretti;MaxFerr;PBKDF2$120000$rIOzHh9R44qYw0z8t7ZeNw==$4DZg6IAV4vEFpoDkJooJ6jBcSEgctNqQ2kH7GQTjZHo=;1999-06-01;Varese;BIGLIETTAIO

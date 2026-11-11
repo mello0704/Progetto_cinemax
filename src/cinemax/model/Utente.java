@@ -2,8 +2,7 @@ package cinemax.model;
 
 import java.time.LocalDate;
 
-//la password è mia?
-
+/** A registered CineMax user and their role. */
 public class Utente {
 
     private final String nome;
@@ -14,6 +13,7 @@ public class Utente {
     private final Ruolo ruolo;
     private final LocalDate dataNascita;
 
+    /** Creates a user record. The password field stores a PBKDF2 hash. */
     public Utente(String nome, String cognome, String username, String password, LocalDate dataNascita, String domicilio, Ruolo ruolo) {
 
         this.nome = nome;
@@ -26,32 +26,39 @@ public class Utente {
     }
 
 
+    /** Returns the user's first name. */
     public String getNome() {
 
         return nome;
     }
 
+    /** Returns the user's last name. */
     public String getCognome() {
         return cognome;
     }
 
+    /** Returns the unique username. */
     public String getUsername() {
         return username;
     }
 
+    /** Returns the stored password hash. */
     public String getPassword() {
         return password;
     }
 
 
+    /** Returns the user's domicile. */
     public String getDomicilio() {
         return domicilio;
     }
 
+    /** Returns the role assigned to the user. */
     public Ruolo getRuolo() {
         return ruolo;
     }
 
+    /** Returns the optional date of birth. */
     public LocalDate getDataNascita() {
         return dataNascita;
     }
@@ -60,6 +67,7 @@ public class Utente {
         return password.equals(tentativo);
     }
 
+    /** Returns a human-readable user summary without exposing the password. */
     @Override
     public String toString() {
         return nome + " " + cognome + " (" + username + ", " + ruolo + ")";

@@ -1,4 +1,3 @@
-// gestisce il login e registrazione
 package cinemax.service;
 
 import cinemax.model.Ruolo;
@@ -6,70 +5,116 @@ import cinemax.model.Utente;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Handles sign-in, registration, and persistent user records. */
 public class AuthenticationService {
-
+    private static final String HEADER =
+            "nome;cognome;username;password;dataNascita;domicilio;ruolo";
+    private final Path file = Path.of("data", "Utenti.csv");
     private final List<Utente> utenti = new ArrayList<>();
 
+    /** Loads users and upgrades legacy clear-text passwords to salted hashes. */
     public AuthenticationService() throws IOException {
         caricaUtenti();
     }
 
     private void caricaUtenti() throws IOException {
-        List<String> righe = Files.readAllLines(Paths.get("data", "utenti.csv"));
+        List<String> righe = Files.readAllLines(file);
+        boolean passwordDaMigrare = false;
 
         for (int i = 1; i < righe.size(); i++) {
             if (righe.get(i).isBlank()) {
-                continue;      // salta le righe vuote
+                continue;
             }
-            String[] c = righe.get(i).split(";", -1);
-            LocalDate nascita = c[4].isEmpty() ? null : LocalDate.parse(c[4]); //poiché la data è facoltativa, se c[4] è vuoto da' null, sennò da' la data
-            Utente u = new Utente(c[0], c[1], c[2], c[3], nascita, c[5], Ruolo.valueOf(c[6]));
-            utenti.add(u);
+            String[] colonne = righe.get(i).split(";", -1);
+            if (colonne.length != 7) {
+                throw new IOException("Riga utenti non valida: " + (i + 1));
+            }
 
+            String password = colonne[3];
+            if (!PasswordUtil.isHash(password)) {
+                password = PasswordUtil.hash(password);
+                passwordDaMigrare = true;
+            }
+
+            LocalDate nascita = colonne[4].isBlank()
+                    ? null : LocalDate.parse(colonne[4]);
+            utenti.add(new Utente(
+                    colonne[0], colonne[1], colonne[2], password,
+                    nascita, colonne[5], Ruolo.valueOf(colonne[6])
+            ));
         }
 
+        if (passwordDaMigrare) {
+            salvaUtenti();
+        }
     }
 
+    /** Authenticates a user, returning {@code null} when credentials do not match. */
     public Utente login(String username, String password) {
-        for (Utente u : utenti) {
-            if (u.getUsername().equals(username) && u.passwordCorretta(password)) {
-                return u;      // trovato: restituisco l'utente
+        for (Utente utente : utenti) {
+            if (utente.getUsername().equalsIgnoreCase(username)
+                    && PasswordUtil.verify(password, utente.getPassword())) {
+                return utente;
             }
         }
-        return null;           // nessun utente corrisponde
+        return null;
     }
 
-    public boolean registraCliente(String nome, String cognome, LocalDate data, String domicilio, String username, String password) throws IOException{
-        //controllo se lo username esiste già
-        for(Utente u : utenti) {
-            if (u.getUsername().equals(username)) {
-                return false;
-            }
+    /** Registers a customer; returns false if the username is already in use. */
+    public boolean registraCliente(String nome, String cognome, LocalDate data,
+                                   String domicilio, String username,
+                                   String password) throws IOException {
+        if (nome == null || nome.isBlank() || cognome == null || cognome.isBlank()
+                || username == null || username.isBlank()
+                || password == null || password.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Nome, cognome, username e password sono obbligatori."
+            );
         }
-        //lo username è nuovom quindi creo l'utente
-            Utente nuovo = new Utente(nome, cognome, username, password, data, domicilio, Ruolo.CLIENTE);
+        if (trovaUtente(username) != null) {
+            return false;
+        }
 
-        //preparo la riga del file con .joim
-            String dataTesto = (data == null) ? "" : data.toString();
-            String riga = String.join(";", nome, cognome, username, password, dataTesto, domicilio, "CLIENTE"); //unisce i pezzi mettendo il ; in mezzo, nello stesso ordine delle colonne del file: nome, cognome, username, password, data, domicilio, ruolo
-
-
-        //scrivo in fondo al file (l'a capo va prima, così il nuovo utente parte sempre su una riga nuova)
-        Files.writeString(Paths.get("data", "utenti.csv"), "\n" + riga, StandardOpenOption.APPEND);
-
-        //aggiungo alla lista in memoria
+        Utente nuovo = new Utente(
+                nome.trim(), cognome.trim(), username.trim(),
+                PasswordUtil.hash(password), data,
+                domicilio == null ? "" : domicilio.trim(), Ruolo.CLIENTE
+        );
         utenti.add(nuovo);
-            return true;
-
-        }
+        salvaUtenti();
+        return true;
     }
 
+    /** Finds a user by username, ignoring letter case. */
+    public Utente trovaUtente(String username) {
+        for (Utente utente : utenti) {
+            if (utente.getUsername().equalsIgnoreCase(username)) {
+                return utente;
+            }
+        }
+        return null;
+    }
 
-
-
+    private void salvaUtenti() throws IOException {
+        List<String> righe = new ArrayList<>();
+        righe.add(HEADER);
+        for (Utente utente : utenti) {
+            righe.add(String.join(";",
+                    utente.getNome(),
+                    utente.getCognome(),
+                    utente.getUsername(),
+                    utente.getPassword(),
+                    utente.getDataNascita() == null
+                            ? "" : utente.getDataNascita().toString(),
+                    utente.getDomicilio(),
+                    utente.getRuolo().name()
+            ));
+        }
+        Files.write(file, righe);
+    }
+}
